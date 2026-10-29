@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FRS Device Monitoring – JSW Dolvi CPP</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--navy:#14306b;--navy2:#1f4a9e;--bg:#f3f6fb;--card:#fff;--ink:#1c2740;--mut:#6b7794;--line:#e2e8f3;--g:#12875a;--gb:#e3f6ec;--r:#c8372d;--rb:#fdebea;--a:#b7791f;--ab:#fff3dc;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font:14px/1.45 "Segoe UI",Inter,system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#eef3fc 0%,#f8f1ff 55%,#eefaf6 100%);min-height:100vh}
+.app{display:flex;min-height:100vh}
+aside{width:215px;background:#fff;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{display:flex;gap:10px;align-items:center;margin-bottom:24px}.logo b{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;font-size:18px}
+.logo span{font-weight:700;color:var(--navy);line-height:1.15}.logo small{display:block;color:var(--mut);font-weight:500;font-size:11px}
+nav button{display:flex;gap:10px;width:100%;border:0;background:none;padding:11px 12px;border-radius:10px;font:inherit;color:var(--mut);cursor:pointer;margin-bottom:4px;text-align:left}
+nav button.on{background:var(--navy);color:#fff;font-weight:600}nav button:not(.on):hover{background:#eef2fa}
+main{flex:1;padding:24px;min-width:0;max-width:1300px}
+h1{margin:0 0 4px;font-size:22px;color:var(--navy)}.sub{color:var(--mut);margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+.card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 4px 16px rgba(20,48,107,.08);border-top:4px solid var(--navy)}
+.card .l{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.card .v{font-size:30px;font-weight:700;color:var(--navy)}
+.card.g{border-color:var(--g)}.card.g .v{color:var(--g)}.card.r{border-color:var(--r)}.card.r .v{color:var(--r)}.card.a{border-color:var(--a)}.card.a .v{color:var(--a)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink);max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid #b7c9ee}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;cursor:pointer;font:inherit;color:var(--mut)}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tw{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(20,48,107,.08);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}th{background:#eaf0fb;color:var(--navy);text-align:left;padding:11px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}tbody tr:nth-child(even){background:#f8faff}tr.att td:first-child{box-shadow:inset 4px 0 var(--r)}
+.tag{color:var(--mut);font-size:11px}.rem{max-width:260px;color:#3d4963}
+.b{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}.b.g{background:var(--gb);color:var(--g)}.b.r{background:var(--rb);color:var(--r)}.b.a{background:var(--ab);color:var(--a)}
+.btn{border:0;border-radius:10px;padding:9px 15px;font:inherit;font-weight:600;cursor:pointer;background:var(--navy);color:#fff}.btn.s{padding:6px 11px;font-size:12px}.btn.o{background:#fff;color:var(--navy);border:1px solid var(--navy)}.btn.gr{background:var(--g)}
+.btn:hover{filter:brightness(1.1)}
+.modal{position:fixed;inset:0;background:rgba(20,32,60,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.modal.on{display:flex}
+.box{background:#fff;border-radius:18px;padding:22px;width:480px;max-width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.box label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}.box select,.box input,.box textarea{width:100%}
+.summ{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:14px}.summ div{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 10px rgba(20,48,107,.07)}.summ b{display:block;font-size:22px;color:var(--navy)}.summ span{font-size:12px;color:var(--mut)}
+.hero{position:relative;overflow:hidden;border-radius:20px;padding:22px 26px;margin-bottom:18px;color:#fff;background:linear-gradient(120deg,#14306b 0%,#2a5cc4 60%,#5aa0ff 100%);display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 10px 30px rgba(20,48,107,.25)}
+.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.2) 1px,transparent 1.5px) 0 0/18px 18px;pointer-events:none}
+.hero>*{position:relative;z-index:1}.hero h1{color:#fff;font-size:25px}.hero .sub{color:#d6e4ff;margin:0}
+.scan{position:relative;width:120px;height:120px;flex-shrink:0;color:#fff}.scan svg{width:100%;height:100%}
+.scan i{position:absolute;left:12%;right:12%;top:14%;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#7fffd4,transparent);box-shadow:0 0 14px 4px rgba(127,255,212,.7);animation:sweep 2.6s ease-in-out infinite}
+@keyframes sweep{0%,100%{top:14%}50%{top:82%}}@media(prefers-reduced-motion:reduce){.scan i{animation:none;top:50%}}
+.prog{height:8px;background:rgba(255,255,255,.25);border-radius:9px;overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fffd4,#c8ffe9);transition:width .4s}
+.fi{width:32px;height:32px;vertical-align:middle;margin-right:10px;padding:4px;border-radius:10px;flex-shrink:0}.fi.g{background:var(--gb);color:var(--g)}.fi.r{background:var(--rb);color:var(--r)}
+.weeks{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}.weeks span{color:var(--mut);font-weight:600;margin-right:4px}
+.empty{padding:30px;text-align:center;color:var(--mut)}#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:12px;display:none;z-index:30}
+@media(max-width:760px){.app{flex-direction:column}aside{width:100%;height:auto;position:static;padding:10px;display:flex;align-items:center;gap:8px;overflow-x:auto}.logo{margin:0}.logo small{display:none}nav{display:flex;gap:4px}nav button{white-space:nowrap;margin:0;padding:9px 11px}main{padding:14px}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><symbol id="face" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V10a4 4 0 0 1 4-4h10M44 6h10a4 4 0 0 1 4 4v10M58 44v10a4 4 0 0 1-4 4H44M20 58H10a4 4 0 0 1-4-4V44"/><ellipse cx="32" cy="32" rx="12" ry="16"/><circle cx="26.5" cy="28" r="1.4" fill="currentColor"/><circle cx="37.5" cy="28" r="1.4" fill="currentColor"/><path d="M32 30v7h-2M27 43q5 3.5 10 0"/></symbol></svg>
+<div class="app">
+<aside><div class="logo"><b><svg width="24" height="24"><use href="#face"/></svg></b><span>FRS Monitor<small>CPP · JSW Dolvi Works</small></span></div>
+<nav><button data-v="dash" class="on">▦ Dashboard</button><button data-v="hist">⟲ History</button><button data-v="rep">⇩ Monthly Reports</button></nav></aside>
+<main>
+<section id="dash"><div class="hero"><div><h1>FRS Device Monitoring</h1><div class="sub">Face Recognition System · Captive Power Plant · JSW Steel, Dolvi Works</div><div style="margin-top:16px;max-width:430px"><div id="wkl" style="font-size:13px"></div><div class="prog"><i id="wkp"></i></div></div></div><div class="scan"><svg><use href="#face"/></svg><i></i></div></div>
+<div class="cards" id="cards"></div>
+<div class="weeks" id="wks"></div>
+<div class="bar"><input id="q" type="search" placeholder="Search location…" style="min-width:230px"><div class="chips" id="chips"></div></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Device Location</th><th>Display</th><th>Magnet</th><th>Push Button</th><th>Status</th><th>Remarks</th><th>Last Inspected</th><th>This Week</th><th></th></tr></thead><tbody id="tb"></tbody></table></div></section>
+
+<section id="hist" hidden><h1>Inspection History</h1><div class="sub">Every inspection is kept as a separate record – nothing is overwritten</div>
+<div class="bar"><select id="hd"></select></div>
+<div class="tw"><table style="min-width:800px"><thead><tr><th>Date</th><th>Device</th><th>Display</th><th>Magnet</th><th>Push Button</th><th>Overall</th><th>Remarks</th><th>Rectification</th></tr></thead><tbody id="ht"></tbody></table></div></section>
+
+<section id="rep" hidden><h1>Monthly Reports &amp; Export</h1><div class="sub">Built from the inspection records saved in this website</div>
+<div class="bar"><select id="mm"></select><select id="yy"></select></div>
+<div class="summ" id="sm"></div>
+<div class="bar"><button class="btn gr" id="xl">⇩ Download Monthly Report (.xlsx)</button><button class="btn o" id="cv">⇩ Export CSV</button></div>
+<div class="tw"><table style="min-width:900px"><thead><tr><th>S. No.</th><th>Device Location</th><th>Inspection Date</th><th>Display</th><th>Magnet</th><th>Push Button</th><th>Overall</th><th>Remarks</th><th>Rectification</th><th>Last Updated</th></tr></thead><tbody id="rt"></tbody></table></div></section>
+</main></div>
+
+<div class="modal" id="md"><div class="box"><div class="scan" style="width:58px;height:58px;float:right;color:var(--navy)"><svg><use href="#face"/></svg><i></i></div><h3 id="mt" style="margin:0;color:var(--navy)"></h3><div class="tag" id="mg"></div>
+<label>Inspection date</label><input type="date" id="fd">
+<label>Display</label><select id="fdi"></select><label>Magnet</label><select id="fm"></select><label>Push Button (Release Switch)</label><select id="fp"></select>
+<label>Remarks / pending action / rectification details</label><textarea id="fr" rows="3"></textarea>
+<label>Rectification status</label><select id="fx"><option>Not Required</option><option>Pending</option><option>Under Observation</option><option>Rectified</option></select>
+<div class="bar" style="margin:16px 0 0;justify-content:flex-end"><button class="btn o" id="cx">Cancel</button><button class="btn" id="sv">Save inspection</button></div></div></div>
+<div id="toast"></div>
+<script>
+const SEED=[{"n": 1, "loc": "DCS Panel Room", "tag": "CPP / FRS / DCS Panel Room / 01", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 2, "loc": "Charger Room", "tag": "CPP / FRS / Charger Room / 02", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 3, "loc": "4 MTR Panel Room", "tag": "CPP / FRS / 4 MTR Panel Room / 03", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "Rework"}, {"n": 4, "loc": "10 MTR Battery Room", "tag": "CPP / FRS / 10 MTR Battery Room / 04", "d": "No Display", "m": "Operational", "p": "Operational", "rem": "No display - given to Mantra for rectification"}, {"n": 5, "loc": "0 MTR Cable Cellar", "tag": "CPP / FRS / 0 MTR Cable Cellar / 05", "d": "Device not there", "m": "Not Installed", "p": "Operational", "rem": "Device to be Installed ( Fire Door ) | Rework"}, {"n": 6, "loc": "GIS", "tag": "CPP / FRS / GIS / 06", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "Adapter Fault ( Fire Door ) - Replacement | Mantra issue material issue"}, {"n": 7, "loc": "PMCC-1 CPP1", "tag": "CPP / FRS / PMCC-1 CPP1 / 07", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "Mantra issue"}, {"n": 8, "loc": "PMCC-1 2nd Door", "tag": "CPP / FRS / PMCC-1 2nd Door / 08", "d": "Not Responding", "m": "Operational", "p": "Operational", "rem": "Display not working - Replacement | Mantra issue"}, {"n": 9, "loc": "PMCC-1 Cable Cellar", "tag": "CPP / FRS / PMCC-1 Cable Cellar / 09", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 10, "loc": "PMCC-2 CPP1", "tag": "CPP / FRS / PMCC-2 CPP1 / 10", "d": "Operational", "m": "Not working", "p": "Operational", "rem": "Because of water magnet getting damaged. | Mantra issue material isue"}, {"n": 11, "loc": "WTS Cable Cellar", "tag": "CPP / FRS / WTS Cable Cellar / 11", "d": "Operational", "m": "Operational", "p": "Not Operational", "rem": "Push Button Issue ( Fire Door ) - Replacement | Mantra issue material issue"}, {"n": 12, "loc": "WTS Panel Room", "tag": "CPP / FRS / WTS Panel Room / 12", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 13, "loc": "WTS Transformer", "tag": "CPP / FRS / WTS Transformer / 13", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "Mantra issue"}, {"n": 14, "loc": "LBSS Panel Room", "tag": "CPP / FRS / LBSS Panel Room / 14", "d": "Disconnected", "m": "Not Installed", "p": "Operational", "rem": "Device Not Installed ( Fire Door ) | Rework"}, {"n": 15, "loc": "LBSS Cable Cellar", "tag": "CPP / FRS / LBSS Cable Cellar / 15", "d": "Disconnected", "m": "Not Installed", "p": "Operational", "rem": "Device Not Installed ( Fire Door ) | Rework"}, {"n": 16, "loc": "DG Room", "tag": "CPP / FRS / DG Room / 16", "d": "Disconnected", "m": "Not Installed", "p": "Operational", "rem": "Device Not Installed ( Fire Door ) | Rework"}, {"n": 17, "loc": "Fire MCC CPP1", "tag": "CPP / FRS / Fire MCC CPP1 / 17", "d": "No Display", "m": "Operational", "p": "Operational", "rem": "Display's magnetic pin defective | No display - given to Mantra for rectification"}, {"n": 18, "loc": "10.5 MTR Cable Cellar", "tag": "CPP / FRS / 10.5 MTR Cable Cellar / 18", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 19, "loc": "CL Plant CPP-1", "tag": "CPP / FRS / CL Plant CPP-1 / 20", "d": "No Display", "m": "Operational", "p": "Operational", "rem": "Monsoon protection to be done | No display - given to Mantra for rectification"}, {"n": 20, "loc": "CL Plant CPP-3", "tag": "CPP / FRS / CL Plant CPP-3 / 21", "d": "No Display", "m": "Alignment Issue", "p": "Operational", "rem": "User to be added | No display - given to Mantra for rectification"}, {"n": 21, "loc": "CPP-1 Control Room TG Side", "tag": "CPP / FRS / CPP-1 Control Room TG Side / 22", "d": "Operational", "m": "Operational", "p": "Not working", "rem": "User to be added."}, {"n": 22, "loc": "CPP-1 Control Room Conf Side", "tag": "CPP / FRS / CPP-1 Control Room Conf Side / 23", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "User to be added."}, {"n": 23, "loc": "CPP-3 10.5 MTR Cable Cellar Emergency Exit", "tag": "CPP / FRS / CPP-3 10.5 MTR Cable Cellar Emergency Exit / 24", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 24, "loc": "CPP-3 4.5 HT Panel Room Stair Side", "tag": "CPP / FRS / CPP-3 4.5 HT Panel Room Stair Side / 25", "d": "Operational", "m": "Alignment Issue", "p": "Operational", "rem": "Magnet plate to be properly fixed."}, {"n": 25, "loc": "CPP-3 4.5 HT Panel Room TG Stair Side", "tag": "CPP / FRS / CPP-3 4.5 HT Panel Room TG Stair Side / 26", "d": "Operational", "m": "Operational", "p": "Operational", "rem": "Mantra issue"}, {"n": 26, "loc": "CPP-3 13 MTR DCS Emergency Gate", "tag": "CPP / FRS / CPP-3 13 MTR DCS Emergency Gate / 27", "d": "Operational", "m": "Operational", "p": "Operational", "rem": ""}, {"n": 27, "loc": "CPP-3 DCS UPS Battery Room", "tag": "CPP / FRS / CPP-3 DCS UPS Battery Room / 28", "d": "No Display", "m": "Operational", "p": "Operational", "rem": "No display - given to Mantra for rectification"}];
+const OPT={d:["Operational","No Display","Touch Not Working","Not Operational","Not Responding","Disconnected","Device not there","Not Installed"],m:["Operational","Not working","Alignment Issue","Magnetic Pin Defective","Not Installed"],p:["Operational","Not working","Not Operational","Not Installed"]};
+const KEY="frs_records_v2",$=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const DEV=SEED,byN=Object.fromEntries(DEV.map(d=>[d.n,d]));
+const MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const iso=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let R=[],mem=null;
+try{R=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){R=null}
+if(!R){const t=iso(),now=new Date().toISOString();R=DEV.map(d=>({id:"r"+d.n+"_"+t,n:d.n,date:t,d:d.d,m:d.m,p:d.p,rem:d.rem,rect:(d.d+d.m+d.p).split("Operational").join("")===""?"Not Required":"Pending",upd:now}));persist()}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
+const ok=r=>r.d==="Operational"&&r.m==="Operational"&&r.p==="Operational";
+const cls=v=>v==="Operational"?"g":(/Not Installed|not there|Disconnected|No Display/.test(v)?"a":"r");
+const bd=v=>`<span class="b ${cls(v)}">${esc(v)}</span>`;
+const ov=r=>ok(r)?'<span class="b g">Healthy</span>':'<span class="b r">Needs Attention</span>';
+const cmp=(a,b)=>a.date===b.date?(a.upd>b.upd?1:-1):(a.date>b.date?1:-1);
+function latest(){const o={};R.slice().sort(cmp).forEach(r=>o[r.n]=r);return o}
+const fm=d=>d.getDate()+" "+MON[d.getMonth()].slice(0,3);
+const WK=[...Array(6)].map((_,i)=>{const s=new Date();s.setDate(s.getDate()-((s.getDay()+6)%7)-7*i);const e=new Date(s);e.setDate(s.getDate()+6);return{s:iso(s),e:iso(e),l:fm(s)+" – "+fm(e)}});
+let flt="all",wi=0;const inWeek=n=>R.some(x=>x.n===n&&x.date>=WK[wi].s&&x.date<=WK[wi].e);
+const F={all:["All Devices",()=>1],ok:["Healthy",r=>ok(r)],d:["Display Issues",r=>r.d!=="Operational"],m:["Magnet Issues",r=>r.m!=="Operational"],p:["Push Button Issues",r=>r.p!=="Operational"],due:["Due This Week",r=>!inWeek(r.n)],rem:["Remarks / Pending",r=>r.rem||r.rect==="Pending"||r.rect==="Under Observation"]};
+function render(){const L=latest(),rows=DEV.map(d=>({d,r:L[d.n]})).filter(x=>x.r);
+ const c=k=>rows.filter(x=>F[k][1](x.r)).length;
+ $("#cards").innerHTML=[["Total Devices",rows.length,""],["Healthy",c("ok"),"g"],["Display Issues",c("d"),"r"],["Magnet Issues",c("m"),"r"],["Push Button Issues",c("p"),"r"],["Pending Rectification",rows.filter(x=>x.r.rect==="Pending").length,"a"]].map(a=>`<div class="card ${a[2]}"><div class="l">${a[0]}</div><div class="v">${a[1]}</div></div>`).join("");
+ const dn=DEV.filter(d=>inWeek(d.n)).length;$("#wkl").innerHTML=`Week ${WK[wi].l}: <b>${dn}/${DEV.length}</b> devices inspected`;$("#wkp").style.width=dn/DEV.length*100+"%";
+ $("#wks").innerHTML="<span>Inspection week</span>"+WK.map((w,i)=>`<button class="chip ${i===wi?"on":""}" data-w="${i}">${w.l}${i?"":" · This week"}</button>`).join("");
+ $("#chips").innerHTML=Object.entries(F).map(([k,v])=>`<button class="chip ${k===flt?"on":""}" data-f="${k}">${v[0]}</button>`).join("");
+ const q=$("#q").value.toLowerCase(),f=rows.filter(x=>F[flt][1](x.r)&&(x.d.loc+x.d.tag).toLowerCase().includes(q));
+ $("#tb").innerHTML=f.length?f.map(({d,r})=>`<tr class="${ok(r)?"":"att"}"><td>${d.n}</td><td><div style="display:flex;align-items:center"><svg class="fi ${ok(r)?"g":"r"}"><use href="#face"/></svg><div><b>${esc(d.loc)}</b><div class="tag">${esc(d.tag)}</div></div></div></td><td>${bd(r.d)}</td><td>${bd(r.m)}</td><td>${bd(r.p)}</td><td>${ov(r)}${r.rect==="Pending"?'<div class="tag" style="color:var(--a)">Rectification pending</div>':""}</td><td class="rem">${esc(r.rem)}</td><td>${r.date.split("-").reverse().join("-")}</td><td>${inWeek(d.n)?'<span class="b g">✓ Done</span>':'<span class="b a">Due</span>'}</td><td style="white-space:nowrap"><button class="btn s" data-i="${d.n}">Inspect</button> <button class="btn s o" data-h="${d.n}">History</button></td></tr>`).join(""):'<tr><td colspan="10" class="empty">No devices match</td></tr>'}
+let cur=null;
+function open(n){cur=n;const d=byN[n],r=latest()[n];$("#mt").textContent=d.loc;$("#mg").textContent=d.tag;{const w=WK[wi],t=iso();$("#fd").value=t>=w.s&&t<=w.e?t:w.e}
+ const fill=(id,o,v)=>$(id).innerHTML=(o.includes(v)?o:[...o,v]).map(x=>`<option ${x===v?"selected":""}>${esc(x)}</option>`).join("");
+ fill("#fdi",OPT.d,r.d);fill("#fm",OPT.m,r.m);fill("#fp",OPT.p,r.p);$("#fr").value=r.rem;$("#fx").value=r.rect;$("#md").classList.add("on")}
+function save(){const date=$("#fd").value;if(!date)return toast("Select inspection date");
+ const rec={n:cur,date,d:$("#fdi").value,m:$("#fm").value,p:$("#fp").value,rem:$("#fr").value.trim(),rect:$("#fx").value,upd:new Date().toISOString()};
+ if(ok(rec)&&rec.rect==="Pending")rec.rect="Not Required";
+ const i=R.findIndex(r=>r.n===cur&&r.date===date);rec.id=i>=0?R[i].id:"r"+cur+"_"+date+"_"+Date.now();
+ if(i>=0)R[i]=rec;else R.push(rec);persist();$("#md").classList.remove("on");render();hist();rep();toast("Inspection saved")}
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2200)}
+function hist(){const v=$("#hd").value||"all";$("#hd").innerHTML='<option value="all">All devices</option>'+DEV.map(d=>`<option value="${d.n}">${d.n}. ${esc(d.loc)}</option>`).join("");$("#hd").value=v;
+ const L=R.filter(r=>v==="all"||r.n==v).sort((a,b)=>-cmp(a,b));
+ $("#ht").innerHTML=L.length?L.map(r=>`<tr><td>${r.date}</td><td>${esc(byN[r.n].loc)}</td><td>${bd(r.d)}</td><td>${bd(r.m)}</td><td>${bd(r.p)}</td><td>${ov(r)}</td><td class="rem">${esc(r.rem)}</td><td>${esc(r.rect)}</td></tr>`).join(""):'<tr><td colspan="8" class="empty">No records</td></tr>'}
+function monthRecs(){const y=+$("#yy").value,m=+$("#mm").value,p=y+"-"+String(m+1).padStart(2,"0");return R.filter(r=>r.date.startsWith(p)).sort((a,b)=>a.date===b.date?a.n-b.n:(a.date>b.date?1:-1))}
+function repRows(){return monthRecs().map((r,i)=>({"S. No.":i+1,"Device Location":byN[r.n].loc,"Inspection Date":r.date,"Display Status":r.d,"Magnet Status":r.m,"Push Button Status":r.p,"Overall Device Status":ok(r)?"Healthy":"Faulty","Remarks":r.rem,"Rectification Status":r.rect,"Last Updated Date":r.upd.slice(0,10)}))}
+function rep(){const ms=monthRecs(),last={};ms.forEach(r=>last[r.n]=r);const L=Object.values(last);
+ const s=[["Total inspections",ms.length],["Unique devices inspected",L.length],["Healthy devices",L.filter(ok).length],["Faulty devices",L.filter(r=>!ok(r)).length],["Display issues recorded",ms.filter(r=>r.d!=="Operational").length],["Magnet issues recorded",ms.filter(r=>r.m!=="Operational").length],["Push button issues recorded",ms.filter(r=>r.p!=="Operational").length],["Pending rectifications",L.filter(r=>r.rect==="Pending").length]];
+ $("#sm").innerHTML=s.map(a=>`<div><b>${a[1]}</b><span>${a[0]}</span></div>`).join("");
+ const rows=repRows();$("#rt").innerHTML=rows.length?rows.map(o=>"<tr>"+Object.values(o).map(v=>`<td>${esc(v)}</td>`).join("")+"</tr>").join(""):'<tr><td colspan="10" class="empty">No inspections recorded for this month</td></tr>'}
+async function dl(kind){const rows=repRows();if(!rows.length)return toast("No records in this month");
+ const name=`FRS_Monthly_Report_${MON[+$("#mm").value]}_${$("#yy").value}.`+kind;let data;
+ if(kind==="xlsx"){const ws=XLSX.utils.json_to_sheet(rows);ws["!cols"]=[6,42,14,18,18,18,16,48,18,16].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Inspections");data=XLSX.write(wb,{bookType:"xlsx",type:"array"})}
+ else{const h=Object.keys(rows[0]),q=v=>'"'+String(v).replace(/"/g,'""')+'"';data="\ufeff"+[h.map(q).join(","),...rows.map(o=>h.map(k=>q(o[k])).join(","))].join("\r\n")}
+ try{const d=await claude.use("downloads");if(!d)return toast("Download not available in this view");await d.save({filename:name,data});toast("Report ready: "+name)}catch(e){if(e&&e.code!=="declined")toast("Download failed")}}
+(function init(){const ys=new Set(R.map(r=>+r.date.slice(0,4)));ys.add(new Date().getFullYear());
+ $("#yy").innerHTML=[...ys].sort().map(y=>`<option>${y}</option>`).join("");$("#yy").value=new Date().getFullYear();
+ $("#mm").innerHTML=MON.map((m,i)=>`<option value="${i}">${m}</option>`).join("");$("#mm").value=new Date().getMonth();
+ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+ $("#q").oninput=render;$("#hd").onchange=hist;$("#mm").onchange=$("#yy").onchange=rep;
+ $("#wks").onclick=e=>{if(e.target.dataset.w!==undefined){wi=+e.target.dataset.w;render()}};
+ $("#chips").onclick=e=>{if(e.target.dataset.f){flt=e.target.dataset.f;render()}};
+ $("#tb").onclick=e=>{const t=e.target;if(t.dataset.i)open(+t.dataset.i);if(t.dataset.h){$("#hd").value=t.dataset.h;hist();go("hist")}};
+ $("#cx").onclick=()=>$("#md").classList.remove("on");$("#sv").onclick=save;$("#xl").onclick=()=>dl("xlsx");$("#cv").onclick=()=>dl("csv");
+ render();hist();rep()})();
+function go(v){["dash","hist","rep"].forEach(x=>$("#"+x).hidden=x!==v);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));if(v==="hist")hist();if(v==="rep")rep()}
+</script></body></html>
